@@ -1,10 +1,9 @@
-import {applyMiddleware, combineReducers, createStore} from "redux";
+import {combineReducers} from "redux";
+import {configureStore} from '@reduxjs/toolkit'
 import {cashReducer} from "./cashReducer";
 import {customerReducer} from "./customerReducer";
-import {composeWithDevTools} from "@redux-devtools/extension";
 import {thunk} from "redux-thunk";
 import createSagaMiddleware from "redux-saga"
-import {countWatcher} from "../saga/countSaga";
 import {rootWatcher} from "../saga";
 
 const sagaMiddleware = createSagaMiddleware()
@@ -14,6 +13,9 @@ const rootReducer = combineReducers({
     customers: customerReducer,
 })
 
-export const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(sagaMiddleware)))
+export const store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware),
+});
 
 sagaMiddleware.run(rootWatcher)
